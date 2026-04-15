@@ -212,6 +212,20 @@ def filtrar_cliente(cpf, clientes):
             return cliente
         
 
+def ler_valor(mensagem):
+    while True:
+        try:
+            valor = float(input(mensagem))
+            if valor <= 0:
+                print("Valor deve ser maior que zero.\n")
+                sleep(0.3)
+                continue
+            return valor
+        except ValueError:
+            print("Digite um número válido.\n")
+            sleep(0.3)
+
+
 def obter_cliente(clientes):
     cpf = input("Informe o CPF >>> ")
     cliente = filtrar_cliente(cpf,clientes)
@@ -255,7 +269,7 @@ def depositar(clientes):
         print("ERRO! Cliente não possui conta.")
         return
 
-    valor = float(input("Informe o valor do depósito >>> R$"))
+    valor = ler_valor("Informe o valor do depósito >>> R$")
     transacao = Deposito(valor)
     cliente.realizar_transacao(conta, transacao)
 
@@ -270,7 +284,7 @@ def sacar(clientes):
         print("ERRO! Cliente não possui conta.")
         return
 
-    valor = float(input("Informe o valor do saque >>> R$"))
+    valor = ler_valor("Informe o valor do saque >>> R$")
     transacao = Saque(valor)
     cliente.realizar_transacao(conta, transacao)
 
