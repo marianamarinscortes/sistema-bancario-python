@@ -68,36 +68,26 @@ class Conta:
     def historico(self):
         return self._historico
     
-    def sacar(self, valor): # Método que saca o dinheiro após uma validação e retorna True se a operação for bem-sucedida e False caso contrário
-        saldo = self.saldo
-        excedeu_saldo = valor > saldo
+    def sacar(self, valor):
+        excedeu_saldo = valor > self.saldo
 
         if excedeu_saldo:
             print("Operação falhou! Saldo insuficiente.")
+            return False
         
-        
-        elif float(valor) > 0:
-            self._saldo -= valor
-            print("Saque realizado com sucesso!")
-            return True
-        
-        else:
-            print("Operação falhou! O valor informado é inválido.")
-
-        return False
+        self._saldo -= valor
+        print("Saque realizado com sucesso!")
+        return True
             
 
-    def depositar(self, valor): # Método que deposita o dinheiro após uma validação e retorna True se a operação for bem-sucedida e False caso contrário
-
-        if float(valor) > 0:
-            self._saldo += valor
-            print("Depósito realizado com sucesso!")
-            return True
+    def depositar(self, valor):
+        if valor <= 0:
+            print("Valor inválido.")
+            return False
         
-        else:
-            print("Operação falhou! O valor informado é inválido.")
-
-        return False
+        self._saldo += valor
+        print("Depósito realizado com sucesso!")
+        return True
 
 
 class ContaCorrente(Conta):
@@ -210,6 +200,7 @@ def filtrar_cliente(cpf, clientes):
     for cliente in clientes:
         if cpf == cliente.cpf:
             return cliente
+    return None
         
 
 def ler_valor(mensagem):
@@ -239,6 +230,7 @@ def obter_cliente(clientes):
 
 def recuperar_conta_cliente(cliente):
     if not cliente.contas:
+        print("ERRO: Cliente não possui conta.")
         return None
     
     print("\nContas disponíveis:")
@@ -266,7 +258,6 @@ def depositar(clientes):
 
     conta = recuperar_conta_cliente(cliente)
     if not conta:
-        print("ERRO! Cliente não possui conta.")
         return
 
     valor = ler_valor("Informe o valor do depósito >>> R$")
@@ -281,7 +272,6 @@ def sacar(clientes):
 
     conta = recuperar_conta_cliente(cliente)
     if not conta:
-        print("ERRO! Cliente não possui conta.")
         return
 
     valor = ler_valor("Informe o valor do saque >>> R$")
@@ -296,7 +286,6 @@ def exibir_extrato(clientes):
 
     conta = recuperar_conta_cliente(cliente)
     if not conta:
-        print("ERRO! Cliente não possui conta.")
         return
     
     transacoes = conta.historico.transacoes
@@ -350,16 +339,18 @@ def criar_conta(clientes, contas, numero_conta):
     
     conta = ContaCorrente.nova_conta(cliente=cliente, numero=numero_conta)
     contas.append(conta)
-    cliente.contas.append(conta)
+    cliente.adicionar_conta(conta)
 
     print("=== Conta criada com sucesso! ===")
 
 
 def listar_contas(clientes, contas):
     cliente = obter_cliente(clientes)
+    if not cliente:
+        return
 
     if not cliente.contas:
-        print("Cliente não possui contas.")
+        print("ERRO: Cliente não possui conta.")
         return
 
     for conta in cliente.contas:
